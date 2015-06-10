@@ -48,8 +48,8 @@
         "ports": [
           {
             "name": "mysql",
-            "port": 3307,
-            "targetPort": 3307
+            "port": 3306,
+            "targetPort": 3306
           }
         ],
         "selector": {
@@ -250,20 +250,20 @@
                 "image": "openshift/mysql-55-centos7",
                 "ports": [
                   {
-                    "containerPort": 3307
+                    "containerPort": 3306
                   }
                 ],
                 "env": [
                   {
-                    "name": "POSTGRESQL_USER",
+                    "name": "MYSQL_USER",
                     "value": "${DATABASE_USER}"
                   },
                   {
-                    "name": "POSTGRESQL_PASSWORD",
+                    "name": "MYSQL_PASSWORD",
                     "value": "${DATABASE_PASSWORD}"
                   },
                   {
-                    "name": "POSTGRESQL_DATABASE",
+                    "name": "MYSQL_DATABASE",
                     "value": "${DATABASE_NAME}"
                   }
                 ]
@@ -301,7 +301,7 @@
     {
       "name": "GIT_REPOSITORY",
       "description": "Change this to match your project's Git repository",
-      "value": "git://github.com/openshift/cakephp-example.git"
+      "value": "git://github.com/jhadvig/cakephp-example.git"
     },
     {
       "name": "FRONTEND_SERVICE_NAME",

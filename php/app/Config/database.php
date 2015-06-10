@@ -90,13 +90,17 @@ class DATABASE_CONFIG {
         $engine = getenv('DATABASE_ENGINE');
 
         if ( $engine == 'mysql' ) {
+
+            $this->default['host']       = getenv("MYSQL_SERVICE_HOST");
+            $this->default['port']       = getenv("MYSQL_SERVICE_PORT");
             $datasource = 'Database/Mysql';
+
         } elseif ( $engine == 'postgresql' ) {
+
+            $this->default['host']       = getenv("DATABASE_SERVICE_HOST");
+            $this->default['port']       = getenv("DATABASE_SERVICE_PORT");
             $datasource = 'Database/Postgres';
         }
-
-        $this->default['host']       = getenv("DATABASE_SERVICE_HOST");
-        $this->default['port']       = getenv("DATABASE_SERVICE_PORT");
         $this->default['login']      = getenv("DATABASE_USER");
         $this->default['password']   = getenv("DATABASE_PASSWORD");
         $this->default['database']   = getenv("DATABASE_NAME");
