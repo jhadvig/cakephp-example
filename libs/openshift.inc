@@ -12,8 +12,7 @@
 function openshift_secure($default_keys,$secure_function = null) {
   // Attempts to get secret token
 
-  // $my_token = getenv('CAKEPHP_SECRET_KEY');
-  $my_token = 'TEST0439fdsdh7gfw87fnw4rawef4';
+  $my_token = getenv('CAKEPHP_SECRET_KEY');
 
   // Only generate random values if on OpenShift
   $array = $default_keys;

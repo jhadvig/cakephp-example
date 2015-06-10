@@ -1,0 +1,349 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1beta3",
+  "metadata": {
+    "name": "cakephp-quickstart-source-mysql",
+    "annotations": {
+      "description": "CakePHP application template that uses the Source build strategy and includes a MySQL database server for storage.",
+      "tags": "instant-app,php,cakephp,mysql",
+      "iconClass" : "icon-php"
+    }
+  },
+  "labels": {
+    "template": "cakephp-quickstart-source-mysql"
+  },
+  "objects": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "${FRONTEND_SERVICE_NAME}",
+        "annotations": {
+          "description": "Exposes and load balances the CakePHP app instances."
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "name": "${FRONTEND_SERVICE_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}",
+        "annotations": {
+          "description": "Exposes the MySQL database server."
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "mysql",
+            "port": 3307,
+            "targetPort": 3307
+          }
+        ],
+        "selector": {
+          "name": "${DATABASE_SERVICE_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1beta3",
+      "metadata": {
+          "name": "${FRONTEND_SERVICE_NAME}-route",
+          "creationTimestamp": null
+      },
+      "spec": {
+          "host" : "${FRONTEND_ROUTE}",
+          "to": {
+              "kind" : "Service",
+              "name" : "${FRONTEND_SERVICE_NAME}"
+          }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "cakephp-quickstart-source",
+        "annotations": {
+          "description": "Defines how to build the CakePHP app."
+        }
+      },
+      "spec": {
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${GIT_REPOSITORY}"
+          },
+          "contextDir": "${CONTEXT_DIR}"
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStream",
+              "name": "php-55-centos7"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStream",
+            "name": "cakephp-quickstart-source"
+          }
+        },
+        "triggers": [
+          {
+            "type": "imageChange",
+            "imageChange": {}
+          },
+          {
+            "type": "github",
+            "github": {
+              "secret": "secret123"
+            }
+          },
+          {
+            "type": "generic",
+            "generic": {
+              "secret": "secret123"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "${FRONTEND_SERVICE_NAME}",
+        "annotations": {
+          "description": "Defines how to deploy the CakePHP app."
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling"
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "cakephp-quickstart"
+              ],
+              "from": {
+                "name": "cakephp-quickstart-source:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${FRONTEND_SERVICE_NAME}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${FRONTEND_SERVICE_NAME}",
+            "labels": {
+              "name": "${FRONTEND_SERVICE_NAME}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "cakephp-quickstart",
+                "image": "cakephp-quickstart-source",
+                "ports": [
+                  {
+                    "containerPort": 8080
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "DATABASE_SERVICE_NAME",
+                    "value": "${DATABASE_SERVICE_NAME}"
+                  },
+                  {
+                    "name": "DATABASE_ENGINE",
+                    "value": "${DATABASE_ENGINE}"
+                  },
+                  {
+                    "name": "DATABASE_NAME",
+                    "value": "${DATABASE_NAME}"
+                  },
+                  {
+                    "name": "DATABASE_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+                  {
+                    "name": "DATABASE_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+                  {
+                    "name": "APP_CONFIG",
+                    "value": "${APP_CONFIG}"
+                  },
+                  {
+                    "name": "DJANGO_SECRET_KEY",
+                    "value": "${DJANGO_SECRET_KEY}"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}",
+        "labels": {
+          "name": "${DATABASE_SERVICE_NAME}"
+        },
+        "annotations": {
+          "description": "Defines how to deploy the database."
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate"
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${DATABASE_SERVICE_NAME}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${DATABASE_SERVICE_NAME}",
+            "labels": {
+              "name": "${DATABASE_SERVICE_NAME}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "mysql",
+                "image": "openshift/mysql-55-centos7",
+                "ports": [
+                  {
+                    "containerPort": 3307
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "POSTGRESQL_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+                  {
+                    "name": "POSTGRESQL_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+                  {
+                    "name": "POSTGRESQL_DATABASE",
+                    "value": "${DATABASE_NAME}"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "cakephp-quickstart-source",
+        "annotations": {
+          "description": "Keeps track of changes in the CakePHP app image."
+        }
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1beta3",
+      "metadata": {
+        "name": "php-55-centos7",
+        "annotations": {
+          "description": "Keeps track of changes in the PHP base image."
+        }
+      },
+      "spec": {
+        "dockerImageRepository": "openshift/php-55-centos7"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "GIT_REPOSITORY",
+      "description": "Change this to match your project's Git repository",
+      "value": "git://github.com/openshift/cakephp-example.git"
+    },
+    {
+      "name": "FRONTEND_SERVICE_NAME",
+      "description": "Frontend service name",
+      "value": "cakephp"
+    },
+    {
+      "name": "FRONTEND_ROUTE",
+      "description": "The exposed hostname that will route to the frontend service",
+      "value": "cakephp-frontend.apps"
+    },
+    {
+      "name": "DATABASE_SERVICE_NAME",
+      "description": "Database service name",
+      "value": "mysql"
+    },
+    {
+      "name": "DATABASE_ENGINE",
+      "description": "Database engine: mysql, mysql or sqlite (default)",
+      "value": "mysql"
+    },
+    {
+      "name": "DATABASE_NAME",
+      "description": "Database name",
+      "value": "default"
+    },
+    {
+      "name": "DATABASE_USER",
+      "description": "Database user name",
+      "value": "cakephp"
+    },
+    {
+      "name": "DATABASE_PASSWORD",
+      "description": "Database user password",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{16}"
+    },
+    {
+      "name": "CAKEPHP_SECRET_KEY",
+      "description": "Set this to a long random string",
+      "generate": "expression",
+      "from": "[\\w]{50}"
+    }
+  ]
+}
