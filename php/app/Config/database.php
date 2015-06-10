@@ -95,11 +95,11 @@ class DATABASE_CONFIG {
             $datasource = 'Database/Postgres';
         }
 
-        $this->default['host']       = '172.17.42.1';
-        $this->default['port']       = '3306';
-        $this->default['login']      = 'user';
-        $this->default['password']   = 'pass';
-        $this->default['database']   = 'db';
+        $this->default['host']       = getenv("DATABASE_SERVICE_HOST");
+        $this->default['port']       = getenv("DATABASE_SERVICE_PORT");
+        $this->default['login']      = getenv("DATABASE_USER");
+        $this->default['password']   = getenv("DATABASE_PASSWORD");
+        $this->default['database']   = getenv("DATABASE_NAME");
         $this->default['datasource'] = $datasource;
         $this->test['datasource']    = $datasource;
 	}
