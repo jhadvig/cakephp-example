@@ -1,7 +1,6 @@
 <?php
 
-// Loop through all provided variables and generate secure versions
-// If not running on OpenShift, returns defaults and logs an error message
+// Loop through all provided variables and generate secure versions.
 //
 // This function calls secure_function and passes an array of:
 //  { 
@@ -10,9 +9,14 @@
 //    'original' => original value
 //  }
 function openshift_secure($default_keys,$secure_function = null) {
-  // Attempts to get secret token
-
-  $my_token = getenv('CAKEPHP_SECRET_KEY');
+  // Attempts to get secret token from CAKEPHP_SECRET_KEY,
+  // generated in openshift template in openshift/templates.
+  // For development purposes a default secret token is used.
+  if ( getenv('CAKEPHP_SECRET_KEY') != '' ) {
+    $my_token = getenv('CAKEPHP_SECRET_KEY');
+  } else {
+    $my_token = 'te5t5tr1ng4l0c4ld3v3l0pm3nt';
+  }
 
   // Only generate random values if on OpenShift
   $array = $default_keys;

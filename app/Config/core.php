@@ -21,7 +21,7 @@
  */
 
 // This is where we define the OpenShift specific secure variable functions
-include(dirname(dirname(dirname(dirname(__FILE__)))) . DS . 'libs' . DS . 'openshift.inc');
+include(dirname(dirname(dirname(__FILE__))) . DS . 'lib' . DS . 'openshift.php');
 
 // Set the default keys to use
 $_default_keys = array(
