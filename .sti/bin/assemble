@@ -1,8 +1,4 @@
-#!/bin/bash
-
-source ./.bashrc
-
-set -e
+#!/bin/bash -e
 
 echo "---> Installing application source"
 cp -Rf /tmp/src/. ./
