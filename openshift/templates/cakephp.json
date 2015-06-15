@@ -31,7 +31,7 @@
           }
         ],
         "selector": {
-          "name": "cakephp-frontend"
+          "name": "cakephp-frontend" 
         }
       }
     },
@@ -199,6 +199,10 @@
       "name": "SOURCE_REPOSITORY_URL",
       "description": "The URL of the repository with your application source code",
       "value": "https://github.com/jhadvig/cakephp-example.git"
+    },
+    {
+      "name": "CONTEXT_DIR",
+      "description": "Set this to the relative path to your project if it is not in the root of your repository"
     },
     {
       "name": "FRONTEND_ROUTE",

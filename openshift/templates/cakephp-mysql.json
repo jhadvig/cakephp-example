@@ -73,7 +73,8 @@
           "type": "Git",
           "git": {
             "uri": "${SOURCE_REPOSITORY_URL}"
-          }
+          },
+          "contextDir": "${CONTEXT_DIR}"
         },
         "strategy": {
           "type": "Source",
@@ -277,6 +278,10 @@
       "value": "https://github.com/jhadvig/cakephp-example.git"
     },
     {
+      "name": "CONTEXT_DIR",
+      "description": "Set this to the relative path to your project if it is not in the root of your repository"
+    },
+    {
       "name": "FRONTEND_ROUTE",
       "description": "The exposed hostname that will route to the Cakephp service",
       "value": "cakephp.app"
@@ -294,7 +299,7 @@
     },
     {
       "name": "DATABASE_ENGINE",
-      "description": "Database engine: mysql, mysql or sqlite (default)",
+      "description": "Database engine: postgresql, mysql or sqlite (default)",
       "value": "mysql"
     },
     {
