@@ -2,15 +2,15 @@
   "kind": "Template",
   "apiVersion": "v1",
   "metadata": {
-    "name": "cakephp-mysql-example",
+    "name": "cakephp-example",
     "annotations": {
-      "description": "An example Cakephp application with a MySQL database",
-      "tags": "instant-app,php,cakephp,mysql",
+      "description": "An example Cakephp application with no database",
+      "tags": "instant-app,php,cakephp",
       "iconClass": "icon-php"
     }
   },
   "labels": {
-    "template": "cakephp-mysql-example"
+    "template": "cakephp-example"
   },
   "objects": [
     {
@@ -73,7 +73,8 @@
           "type": "Git",
           "git": {
             "uri": "${SOURCE_REPOSITORY_URL}"
-          }
+          },
+          "contextDir": "${CONTEXT_DIR}"
         },
         "strategy": {
           "type": "Source",
@@ -178,89 +179,12 @@
                     "value": "${DATABASE_PASSWORD}"
                   },
                   {
-                    "name": "CAKEPHP_SECRET_KEY",
-                    "value": "${CAKEPHP_SECRET_KEY}"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}",
-        "annotations": {
-          "description": "Exposes the database server"
-        }
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "mysql",
-            "port": 3306,
-            "targetPort": 3306
-          }
-        ],
-        "selector": {
-          "name": "${DATABASE_SERVICE_NAME}"
-        }
-      }
-    },
-    {
-      "kind": "DeploymentConfig",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}",
-        "annotations": {
-          "description": "Defines how to deploy the database"
-        }
-      },
-      "spec": {
-        "strategy": {
-          "type": "Recreate"
-        },
-        "triggers": [
-          {
-            "type": "ConfigChange"
-          }
-        ],
-        "replicas": 1,
-        "selector": {
-          "name": "${DATABASE_SERVICE_NAME}"
-        },
-        "template": {
-          "metadata": {
-            "name": "${DATABASE_SERVICE_NAME}",
-            "labels": {
-              "name": "${DATABASE_SERVICE_NAME}"
-            }
-          },
-          "spec": {
-            "containers": [
-              {
-                "name": "mysql",
-                "image": "openshift/mysql-55-centos7",
-                "ports": [
-                  {
-                    "containerPort": 3306
-                  }
-                ],
-                "env": [
-                  {
-                    "name": "MYSQL_USER",
-                    "value": "${DATABASE_USER}"
+                    "name": "APP_CONFIG",
+                    "value": "${APP_CONFIG}"
                   },
                   {
-                    "name": "MYSQL_PASSWORD",
-                    "value": "${DATABASE_PASSWORD}"
-                  },
-                  {
-                    "name": "MYSQL_DATABASE",
-                    "value": "${DATABASE_NAME}"
+                    "name": "DJANGO_SECRET_KEY",
+                    "value": "${DJANGO_SECRET_KEY}"
                   }
                 ]
               }
@@ -289,29 +213,23 @@
     },
     {
       "name": "DATABASE_SERVICE_NAME",
-      "description": "Database service name",
-      "value": "mysql"
+      "description": "Database service name"
     },
     {
       "name": "DATABASE_ENGINE",
-      "description": "Database engine: mysql, mysql or sqlite (default)",
-      "value": "mysql"
+      "description": "Database engine: postgresql, mysql or sqlite (default)"
     },
     {
       "name": "DATABASE_NAME",
-      "description": "Database name",
-      "value": "default"
+      "description": "Database name"
     },
     {
       "name": "DATABASE_USER",
-      "description": "Database user name",
-      "value": "cakephp"
+      "description": "Database user name"
     },
     {
       "name": "DATABASE_PASSWORD",
-      "description": "Database user password",
-      "generate": "expression",
-      "from": "[a-zA-Z0-9]{16}"
+      "description": "Database user password"
     },
     {
       "name": "CAKEPHP_SECRET_KEY",
