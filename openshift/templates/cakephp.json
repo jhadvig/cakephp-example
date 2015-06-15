@@ -179,10 +179,6 @@
                     "value": "${DATABASE_PASSWORD}"
                   },
                   {
-                    "name": "APP_CONFIG",
-                    "value": "${APP_CONFIG}"
-                  },
-                  {
                     "name": "DJANGO_SECRET_KEY",
                     "value": "${DJANGO_SECRET_KEY}"
                   }
